@@ -1,0 +1,30 @@
+namespace WinMgmt
+{
+    enum PropertyType
+    {
+        Unknown,
+        Int8,
+        Int16,
+        Int32,
+        Int64,
+        UInt8,
+        UInt16,
+        UInt32,
+        UInt64,
+        Float,
+        Double,
+        Boolean,
+        String,
+        Null
+    };
+
+    runtimeclass WmiClassObjectProperty
+    {
+        WmiClassObjectProperty();
+        WmiClassObjectProperty(String name, Object val, PropertyType type);
+
+        PropertyType Type{ get; };
+        String Name{ get; };
+        Object Value{ get; };
+    }
+}

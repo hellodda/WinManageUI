@@ -1,0 +1,11 @@
+import "WmiClassObjectProperty.idl";
+
+namespace WinMgmt
+{
+    runtimeclass WmiClassObject 
+    {
+        WmiClassObject();
+        Windows.Foundation.Collections.IVectorView<WmiClassObjectProperty> Properties{ get; };
+        WmiClassObjectProperty GetProperty(String name);
+    }
+}

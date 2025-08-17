@@ -1,0 +1,12 @@
+import "WmiClassObject.idl";
+
+namespace WinMgmt
+{
+    runtimeclass WmiDataContext
+    {
+        WmiDataContext();
+
+        Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<WmiClassObject> > QueryAsync(String query);
+        String Namespace;
+    }
+}
