@@ -4,7 +4,7 @@
 #include "WmiClassObject.g.cpp"
 #endif
 
-#include "Utils/PropertyParser.h"
+#include "PropertyParser.h"
 
 namespace winrt::WinMgmt::implementation
 {
@@ -12,7 +12,7 @@ namespace winrt::WinMgmt::implementation
     {
         m_object.copy_from(pObject);
     }
-    Windows::Foundation::Collections::IVectorView<WinMgmt::WmiClassObjectProperty> WmiClassObject::Properties() const noexcept
+    [[nodiscard]] Windows::Foundation::Collections::IVectorView<WinMgmt::WmiClassObjectProperty> WmiClassObject::Properties() const noexcept
     {
         winrt::check_hresult(m_object->BeginEnumeration(WBEM_FLAG_NONSYSTEM_ONLY));
 
@@ -21,16 +21,12 @@ namespace winrt::WinMgmt::implementation
 
         auto props = single_threaded_vector<WinMgmt::WmiClassObjectProperty>();
 
-        struct scope_exit
-        {
-            IWbemClassObject* obj;
-            ~scope_exit() { if (obj) obj->EndEnumeration(); }
-        } guard{ m_object.get() };
+        auto guard = wil::scope_exit([&] { m_object->EndEnumeration(); });
 
         while (true)
         {
             HRESULT hr = m_object->Next(0, &name.GetBSTR(), &var, nullptr, nullptr);
-            if (hr == WBEM_S_NO_ERROR)
+            if (hr == WBEM_S_NO_ERROR) [[likely]]
             {
                 props.Append(PropertyParser::CreateFromVartype(name, var));
             }
@@ -42,7 +38,7 @@ namespace winrt::WinMgmt::implementation
         return props.GetView();
     }
 
-    WinMgmt::WmiClassObjectProperty WmiClassObject::GetProperty(hstring const& name)
+    [[nodiscard]] WinMgmt::WmiClassObjectProperty WmiClassObject::GetProperty(hstring const& name)
     {
         _variant_t var;
         winrt::check_hresult(m_object->Get(name.c_str(), 0, &var, nullptr, nullptr));

@@ -92,6 +92,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp23</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
@@ -105,7 +106,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="Utils\PropertyParser.h" />
+    <ClInclude Include="PropertyParser.h" />
     <ClInclude Include="WmiClassObject.h">
       <DependentUpon>WmiClassObject.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -119,13 +120,17 @@
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="WmiQuerySink.h" />
+    <ClInclude Include="WmiQueryValidator.h">
+      <DependentUpon>WmiQueryValidator.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
-    <ClCompile Include="Utils\PropertyParser.cpp" />
+    <ClCompile Include="PropertyParser.cpp" />
     <ClCompile Include="WmiClassObject.cpp">
       <DependentUpon>WmiClassObject.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -139,6 +144,10 @@
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="WmiQuerySink.cpp" />
+    <ClCompile Include="WmiQueryValidator.cpp">
+      <DependentUpon>WmiQueryValidator.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="WmiClassObject.idl">
@@ -148,6 +157,9 @@
       <SubType>Designer</SubType>
     </Midl>
     <Midl Include="WmiDataContext.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="WmiQueryValidator.idl">
       <SubType>Designer</SubType>
     </Midl>
   </ItemGroup>

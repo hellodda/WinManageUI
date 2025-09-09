@@ -1,0 +1,10 @@
+namespace WinMgmt
+{
+    [bindable]
+    [default_interface]
+    runtimeclass WmiQueryValidator 
+    {
+        WmiQueryValidator();
+        Boolean Validate(String query);
+    }
+}

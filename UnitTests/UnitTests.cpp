@@ -211,6 +211,24 @@ namespace UnitTests
             // Ensure queries returned results and average is within a reasonable limit.
             Assert::IsTrue(avg < maxAverageMs, L"Average query time is too slow.");
         }
+
+        TEST_METHOD(Wmi_QueryValidator_Valid_Query_Test)
+        {
+            const winrt::hstring query = L"SELECT * FROM Win32_NetworkAdapterConfiguration";
+
+            winrt::WinMgmt::WmiQueryValidator validator;
+
+            Assert::IsTrue(validator.Validate(query));
+        }
+
+        TEST_METHOD(Wmi_QueryValidator_Invalid_Query_Test)
+        {
+            const winrt::hstring query = L"INVALID QUERY";
+
+            winrt::WinMgmt::WmiQueryValidator validator;
+
+            Assert::IsTrue(!validator.Validate(query));
+        }
     };
 
 }

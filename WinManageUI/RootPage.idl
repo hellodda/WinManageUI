@@ -1,0 +1,8 @@
+namespace WinManageUI
+{
+    [default_interface]
+    runtimeclass RootPage : Microsoft.UI.Xaml.Controls.Page
+    {
+        RootPage();
+    }
+}
