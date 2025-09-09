@@ -214,21 +214,28 @@ namespace UnitTests
 
         TEST_METHOD(Wmi_QueryValidator_Valid_Query_Test)
         {
+            // Verify that the WQL query validator correctly identifies a valid query.
+            // This ensures that well-formed queries are recognized as valid and can be executed safely.
             const winrt::hstring query = L"SELECT * FROM Win32_NetworkAdapterConfiguration";
 
             winrt::WinMgmt::WmiQueryValidator validator;
 
+            // Expect the validator to return true for a valid WQL query.
             Assert::IsTrue(validator.Validate(query));
         }
 
         TEST_METHOD(Wmi_QueryValidator_Invalid_Query_Test)
         {
-            const winrt::hstring query = L"INVALID QUERY";
+            // Verify that the WQL query validator correctly identifies an invalid query.
+            // This ensures that malformed queries are caught before execution, preventing runtime errors.
+            const winrt::hstring query = L"INVALID QUERY"; // intentionally invalid WQL
 
             winrt::WinMgmt::WmiQueryValidator validator;
 
+            // Expect the validator to return false for the invalid query.
             Assert::IsTrue(!validator.Validate(query));
         }
+
     };
 
 }
