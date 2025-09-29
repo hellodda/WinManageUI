@@ -26,3 +26,4 @@
 #include <wil/win32_helpers.h>
 
 #include <winrt/WinMgmt.h>
+#include "Utils.h"

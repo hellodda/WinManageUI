@@ -44,6 +44,10 @@ namespace winrt::WinManageUI::implementation
             Win32Helper::DisableMultiInstanceWindow(sender.try_as<Microsoft::UI::Xaml::Window>(), self.m_appName);
         });
 
+        OPEN_CONSOLE
+
+        LOG_INFO("Test")
+
         m_window.Activate();
     }
 }

@@ -4,8 +4,8 @@
     <ApplicationDefinition Include="App.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="MainWindow.xaml" />
-    <Page Include="RootPage.xaml" />
+    <Page Include="Views\MainWindow.xaml" />
+    <Page Include="Views\RootPage.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="MainWindow.idl" />
@@ -20,6 +20,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Helpers\Win32Helper.h" />
     <ClInclude Include="Helpers\SettingsHelper.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">
