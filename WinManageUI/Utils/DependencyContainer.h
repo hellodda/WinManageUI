@@ -20,10 +20,16 @@ concept WinRTProjection = std::is_convertible_v<T, winrt::Windows::Foundation::I
 template<typename T>
 concept NativeService = !WinRTProjection<T>;
 
+enum class Lifetime { Singleton, Transient };
+
 namespace Containers {
+
+
 
     class DependencyContainer {
     public:
+
+     
 
         DependencyContainer() = default;
         DependencyContainer(std::nullptr_t) {}
@@ -33,63 +39,94 @@ namespace Containers {
         DependencyContainer& operator=(DependencyContainer&&) = default;
 
         template<NativeService T>
-        void RegisterInstance(const std::string& name = {}) {
+        void RegisterInstance(Lifetime life = Lifetime::Singleton, std::string const& name = {}) {
             Key k{ std::type_index(typeid(std::decay_t<T>)), name };
             auto e = std::make_shared<Entry>();
-            e->kind = Entry::Kind::Native;
-            e->instance = std::static_pointer_cast<void>(std::make_shared<T>());
+            e->type = Entry::Type::Native;
+
+            if (life == Lifetime::Singleton)
+            {
+                e->instance = std::static_pointer_cast<void>(std::make_shared<T>());
+            }
+            else
+            {
+                e->factory = []() -> std::shared_ptr<void>
+                {
+                    return std::make_shared<T>();
+                };
+            }
+
             std::lock_guard<std::mutex> lk(m_mapMutex);
             m_map[k] = std::move(e);
         }
 
         template<WinRTProjection T>
-        void RegisterInstance(const std::string& name = {}) {
+        void RegisterInstance(Lifetime life = Lifetime::Singleton, std::string const& name = {}) {
             Key k{ std::type_index(typeid(std::decay_t<T>)), name };
             auto e = std::make_shared<Entry>();
-            e->kind = Entry::Kind::WinRT;
-            e->instance = winrt::Windows::Foundation::IInspectable{ T{} };
+            e->type = Entry::Type::WinRT;
+
+            if (life == Lifetime::Singleton)
+            {
+                e->instance = winrt::Windows::Foundation::IInspectable{ T{} };
+            }
+            else
+            {
+                e->factory = []() -> winrt::Windows::Foundation::IInspectable
+                {
+                    return winrt::Windows::Foundation::IInspectable{ T{} };
+                };
+            }
             std::lock_guard<std::mutex> lk(m_mapMutex);
             m_map[k] = std::move(e);
         }
 
         template<WinRTProjection T>
-        T Resolve(const std::string& name = {}) {
+        T Resolve(std::string const& name = {}) {
             auto entry = GetEntry(typeid(std::decay_t<T>), name);
             if (!entry) throw std::runtime_error(std::string("Service not registered: ") + typeid(T).name() + (name.empty() ? "" : "@" + name));
-            if (entry->kind != Entry::Kind::WinRT) throw std::runtime_error("Requested WinRT resolution but entry is Native kind");
+            if (entry->type != Entry::Type::WinRT) throw std::runtime_error("Requested WinRT resolution but entry is Native kind");
 
             if (auto p = std::get_if<winrt::Windows::Foundation::IInspectable>(&entry->instance)) {
                 return p->as<T>();
             }
+
+            if (std::holds_alternative<std::function<winrt::Windows::Foundation::IInspectable()>>(entry->factory))
+                return std::get<std::function<winrt::Windows::Foundation::IInspectable()>>(entry->factory)().as<T>();
+
             throw std::runtime_error("Stored entry does not contain WinRT instance");
         }
 
         template<WinRTProjection T>
-        std::optional<T> TryResolve(const std::string& name = {}) noexcept {
+        std::optional<T> TryResolve(std::string const& name = {}) noexcept {
             try { return Resolve<T>(name); }
             catch (...) { return std::nullopt; }
         }
 
         template<NativeService T>
-        std::shared_ptr<std::decay_t<T>> Resolve(const std::string& name = {}) {
+        std::shared_ptr<std::decay_t<T>> Resolve(std::string const& name = {}) {
             auto entry = GetEntry(typeid(std::decay_t<T>), name);
             if (!entry) throw std::runtime_error(std::string("Service not registered: ") + typeid(T).name() + (name.empty() ? "" : "@" + name));
-            if (entry->kind != Entry::Kind::Native) throw std::runtime_error("Requested native resolution but entry is WinRT kind");
+            if (entry->type != Entry::Type::Native) throw std::runtime_error("Requested native resolution but entry is WinRT kind");
 
             if (auto p = std::get_if<std::shared_ptr<void>>(&entry->instance)) {
                 return std::static_pointer_cast<std::decay_t<T>>(*p);
             }
+
+            if (std::holds_alternative<std::function<std::shared_ptr<void>()>>(entry->factory))
+                return std::static_pointer_cast<std::decay_t<T>>(std::get<std::function<std::shared_ptr<void>()>>(entry->factory)());
+
             throw std::runtime_error("Stored entry does not contain native instance");
         }
 
         template<NativeService T>
-        std::optional<std::shared_ptr<std::decay_t<T>>> TryResolve(const std::string& name = {}) noexcept {
+        std::optional<std::shared_ptr<std::decay_t<T>>> TryResolve(std::string const& name = {}) noexcept {
             try { return Resolve<T>(name); }
             catch (...) { return std::nullopt; }
         }
 
         template<typename T>
-        bool Remove(const std::string& name = {}) {
+        bool Remove(std::string const& name = {}) {
             Key k{ std::type_index(typeid(std::decay_t<T>)), name };
             std::lock_guard<std::mutex> lk(m_mapMutex);
             return m_map.erase(k) > 0;
@@ -101,6 +138,11 @@ namespace Containers {
         }
 
     private:
+
+
+        using InstanceVariant = std::variant<std::shared_ptr<void>, winrt::Windows::Foundation::IInspectable>;
+        using FactoryVariant = std::variant<std::function<std::shared_ptr<void>()>, std::function<winrt::Windows::Foundation::IInspectable()>>;
+
         struct Key {
             std::type_index type;
             std::string name;
@@ -116,11 +158,12 @@ namespace Containers {
         };
 
         struct Entry {
-            enum class Kind { Native, WinRT } kind = Kind::Native;
-            std::variant<std::shared_ptr<void>, winrt::Windows::Foundation::IInspectable> instance;
+            enum class Type { Native, WinRT } type = Type::Native;
+            InstanceVariant instance;
+            FactoryVariant factory;
         };
 
-        std::shared_ptr<Entry> GetEntry(std::type_index t, const std::string& name) {
+        std::shared_ptr<Entry> GetEntry(std::type_index t, std::string const& name) {
             Key k{ std::move(t), name };
             std::lock_guard<std::mutex> lk(m_mapMutex);
             auto it = m_map.find(k);

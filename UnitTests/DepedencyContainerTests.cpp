@@ -80,8 +80,8 @@ namespace UnitTests
         TEST_METHOD(NamedRegistrations_AreIndependent)
         {
             Containers::DependencyContainer c{ nullptr };
-            c.RegisterInstance<ImplDefault>("one");
-            c.RegisterInstance<ImplCounter>("two");
+            c.RegisterInstance<ImplDefault>(Lifetime::Singleton, "one");
+            c.RegisterInstance<ImplCounter>(Lifetime::Singleton ,"two");
 
             auto a = c.TryResolve<ImplDefault>("one");
             auto b = c.TryResolve<ImplCounter>("two");
@@ -97,7 +97,7 @@ namespace UnitTests
         TEST_METHOD(RemoveRegistration_MakesResolveFail)
         {
             Containers::DependencyContainer c{ nullptr };
-            c.RegisterInstance<ImplDefault>("rm");
+            c.RegisterInstance<ImplDefault>(Lifetime::Singleton, "rm");
 
             auto sp = c.TryResolve<ImplDefault>("rm");
             Assert::IsTrue(sp.has_value());
@@ -116,8 +116,8 @@ namespace UnitTests
         TEST_METHOD(Clear_Removes_All)
         {
             Containers::DependencyContainer c{ nullptr };
-            c.RegisterInstance<ImplDefault>("a");
-            c.RegisterInstance<ImplDefault>("b");
+            c.RegisterInstance<ImplDefault>(Lifetime::Singleton, "a");
+            c.RegisterInstance<ImplDefault>(Lifetime::Singleton, "b");
 
             c.Clear();
 

@@ -46,7 +46,8 @@ namespace winrt::WinManageUI::implementation
 
     void App::RegisterDependencies()
     {
-        m_container.RegisterInstance<winrt::WinMgmt::WmiDataContext>();
+        m_container.RegisterInstance<winrt::WinMgmt::WmiDataContext>(Lifetime::Singleton ,"Default");
+        m_container.RegisterInstance<winrt::WinMgmt::WmiDataContext>(Lifetime::Transient, "ForNT");
     }
 
     void App::OnLaunched([[maybe_unused]] LaunchActivatedEventArgs const& e)
@@ -58,6 +59,9 @@ namespace winrt::WinManageUI::implementation
 
         m_window.Content(m_rootPage);
         
+        auto context = m_container.Resolve<winrt::WinMgmt::WmiDataContext>();
+        auto context_2 = m_container.Resolve<winrt::WinMgmt::WmiDataContext>("test");
+
         auto appWindow{ m_window.AppWindow() };
 
         m_window.ExtendsContentIntoTitleBar(true);
