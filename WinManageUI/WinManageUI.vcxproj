@@ -136,7 +136,6 @@
     <Page Include="Views\MainWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Utils\DependencyContainer.cpp" />
     <ClCompile Include="Views\RootPage.xaml.cpp">
       <DependentUpon>Views\RootPage.xaml</DependentUpon>
       <SubType>Code</SubType>

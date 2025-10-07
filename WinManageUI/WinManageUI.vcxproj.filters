@@ -14,9 +14,6 @@
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
-    <ClCompile Include="Utils\DependencyContainer.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
     <ClCompile Include="Helpers\SettingsHelper.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>

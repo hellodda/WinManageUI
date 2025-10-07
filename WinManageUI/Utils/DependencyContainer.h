@@ -20,16 +20,18 @@ concept WinRTProjection = std::is_convertible_v<T, winrt::Windows::Foundation::I
 template<typename T>
 concept NativeService = !WinRTProjection<T>;
 
+template<typename F, typename Interface>
+concept NativeFactory = std::invocable<F> && std::convertible_to<std::invoke_result_t<F>, std::shared_ptr<std::decay_t<Interface>>>;
+
+template<typename F>
+concept WinRTFactory = std::invocable<F> && std::convertible_to<std::invoke_result_t<F>, winrt::Windows::Foundation::IInspectable>;
+
 enum class Lifetime { Singleton, Transient };
 
 namespace Containers {
 
-
-
     class DependencyContainer {
     public:
-
-     
 
         DependencyContainer() = default;
         DependencyContainer(std::nullptr_t) {}
@@ -77,6 +79,52 @@ namespace Containers {
                     return winrt::Windows::Foundation::IInspectable{ T{} };
                 };
             }
+            std::lock_guard<std::mutex> lk(m_mapMutex);
+            m_map[k] = std::move(e);
+        }
+
+        template<NativeService Interface, NativeFactory F>
+        void RegisterInstance(F&& factory, Lifetime life = Lifetime::Transient, std::string const& name = {})
+        {
+            Key k{ std::type_index(typeid(std::decay_t<Interface>)), std::move(name) };
+            auto e = std::make_shared<Entry>();
+            e->type = Entry::Type::Native;
+
+            if (life == Lifetime::Singleton)
+            {
+                auto inst = std::invoke(std::forward<F>(factory));
+                e->instance = std::static_pointer_cast<void>(inst);
+            }
+            else
+            {
+                e->factory = [f = std::forward<F>(factory)]() -> std::shared_ptr<void> {
+                    return std::static_pointer_cast<void>(std::invoke(f));
+                };
+            }
+
+            std::lock_guard<std::mutex> lk(m_mapMutex);
+            m_map[k] = std::move(e);
+        }
+
+        template<WinRTProjection Interface, WinRTFactory F>
+        void RegisterInstance(F&& factory, Lifetime life = Lifetime::Transient, std::string const& name = {})
+        {
+            Key k{ std::type_index(typeid(std::decay_t<Interface>)), std::move(name) };
+            auto e = std::make_shared<Entry>();
+            e->type = Entry::Type::WinRT;
+
+            if (life == Lifetime::Singleton)
+            {
+                auto inst = std::invoke(std::forward<F>(factory)); 
+                e->instance = winrt::Windows::Foundation::IInspectable{ inst };
+            }
+            else
+            {
+                e->factory = [f = std::forward<F>(factory)]() -> winrt::Windows::Foundation::IInspectable {
+                    return winrt::Windows::Foundation::IInspectable{ std::invoke(f) };
+                };
+            }
+
             std::lock_guard<std::mutex> lk(m_mapMutex);
             m_map[k] = std::move(e);
         }

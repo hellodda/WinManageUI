@@ -47,7 +47,13 @@ namespace winrt::WinManageUI::implementation
     void App::RegisterDependencies()
     {
         m_container.RegisterInstance<winrt::WinMgmt::WmiDataContext>(Lifetime::Singleton ,"Default");
-        m_container.RegisterInstance<winrt::WinMgmt::WmiDataContext>(Lifetime::Transient, "ForNT");
+        m_container.RegisterInstance<winrt::WinMgmt::WmiDataContext>();
+
+        m_container.RegisterInstance<winrt::WinMgmt::WmiDataContext>([]() {
+            auto context = winrt::WinMgmt::WmiDataContext{};
+            context.Namespace(L"Some Namespace");
+            return context;
+        }, Lifetime::Singleton, "N");
     }
 
     void App::OnLaunched([[maybe_unused]] LaunchActivatedEventArgs const& e)
@@ -60,7 +66,7 @@ namespace winrt::WinManageUI::implementation
         m_window.Content(m_rootPage);
         
         auto context = m_container.Resolve<winrt::WinMgmt::WmiDataContext>();
-        auto context_2 = m_container.Resolve<winrt::WinMgmt::WmiDataContext>("test");
+        auto context_2 = m_container.Resolve<winrt::WinMgmt::WmiDataContext>("N");
 
         auto appWindow{ m_window.AppWindow() };
 
