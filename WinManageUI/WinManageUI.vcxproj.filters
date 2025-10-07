@@ -4,23 +4,40 @@
     <ApplicationDefinition Include="App.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Views\MainWindow.xaml" />
-    <Page Include="Views\RootPage.xaml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Midl Include="MainWindow.idl" />
+    <Page Include="Views\RootPage.xaml">
+      <Filter>Views</Filter>
+    </Page>
+    <Page Include="Views\MainWindow.xaml">
+      <Filter>Views</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
-    <ClCompile Include="Helpers\Win32Helper.cpp" />
-    <ClCompile Include="Helpers\SettingsHelper.cpp" />
+    <ClCompile Include="Utils\DependencyContainer.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Helpers\SettingsHelper.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Helpers\Win32Helper.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="Helpers\Win32Helper.h" />
-    <ClInclude Include="Helpers\SettingsHelper.h" />
-    <ClInclude Include="Utils.h" />
+    <ClInclude Include="Utils\DependencyContainer.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers\SettingsHelper.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers\Win32Helper.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Logging.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">
@@ -48,6 +65,24 @@
   <ItemGroup>
     <Filter Include="Assets">
       <UniqueIdentifier>{9b20dfb0-86b5-4f11-8816-e28f0c33130d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Views">
+      <UniqueIdentifier>{73d3d01f-176f-4497-8d0b-bb063d588c01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ViewModels">
+      <UniqueIdentifier>{211643f9-9c8a-403a-9d9e-b819e1d4b1fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{a7a6a2ab-84da-4009-9b2e-5d48e72ea44f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Helpers">
+      <UniqueIdentifier>{3c1537fb-7275-45fc-a9e3-8c023f56169c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services">
+      <UniqueIdentifier>{07fe3830-0a8e-49fe-9321-372b0314fa37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Convertors">
+      <UniqueIdentifier>{99abc1bd-8ece-452e-90fc-c981f4f8304e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

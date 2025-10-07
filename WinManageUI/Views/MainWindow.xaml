@@ -9,8 +9,4 @@
     xmlns:wmgmt="using:WinMgmt"
     mc:Ignorable="d"
     Title="WinManageUI">
-
-    <Grid>
-     
-    </Grid>
 </Window>

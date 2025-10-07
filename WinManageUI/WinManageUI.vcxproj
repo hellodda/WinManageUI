@@ -112,6 +112,7 @@
     <Manifest Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Utils\DependencyContainer.h" />
     <ClInclude Include="Views\RootPage.xaml.h">
       <DependentUpon>Views\RootPage.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -125,7 +126,7 @@
     </ClInclude>
     <ClInclude Include="Helpers\Win32Helper.h" />
     <ClInclude Include="Helpers\SettingsHelper.h" />
-    <ClInclude Include="Utils.h" />
+    <ClInclude Include="Utils\Logging.h" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
@@ -135,6 +136,7 @@
     <Page Include="Views\MainWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Utils\DependencyContainer.cpp" />
     <ClCompile Include="Views\RootPage.xaml.cpp">
       <DependentUpon>Views\RootPage.xaml</DependentUpon>
       <SubType>Code</SubType>

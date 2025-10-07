@@ -10,6 +10,7 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.ApplicationModel.Activation.h>
+#include <winrt/Microsoft.Windows.AppLifecycle.h>
 
 #include <winrt/Microsoft.UI.Composition.h>
 #include <winrt/Microsoft.UI.Xaml.h>
@@ -26,4 +27,4 @@
 #include <wil/win32_helpers.h>
 
 #include <winrt/WinMgmt.h>
-#include "Utils.h"
+#include "Utils/Logging.h"

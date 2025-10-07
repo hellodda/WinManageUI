@@ -6,7 +6,12 @@
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
-    <ClCompile Include="UnitTests.cpp" />
+    <ClCompile Include="WmiTests.cpp">
+      <Filter>IntegrationTests</Filter>
+    </ClCompile>
+    <ClCompile Include="DepedencyContainerTests.cpp">
+      <Filter>UnitTests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -37,6 +42,12 @@
   <ItemGroup>
     <Filter Include="Assets">
       <UniqueIdentifier>{352a6a57-a11d-4a8c-9a92-b74b6cdc0a54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IntegrationTests">
+      <UniqueIdentifier>{0cae8c07-2e55-43f5-ac8e-92740e4cff7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UnitTests">
+      <UniqueIdentifier>{1f2a3b90-acd1-40c0-adf7-cb4659ecc6f4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

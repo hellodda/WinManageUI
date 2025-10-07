@@ -5,14 +5,20 @@
 #include <Helpers/Win32Helper.h>
 #include <Helpers/SettingsHelper.h>
 
+#include "Utils/Logging.h"
+
 using namespace winrt;
 using namespace winrt::Microsoft::UI::Xaml;
 
 namespace winrt::WinManageUI::implementation
 {
+    winrt::Microsoft::UI::Xaml::Window App::m_window{ nullptr };
+    Containers::DependencyContainer App::m_container{ nullptr };
+
     App::App()
     {
         InitializeComponent();
+        RegisterDependencies();
 
         Win32Helper::DisableMultiInstanceEntry(m_appName, 1);
 
@@ -28,15 +34,31 @@ namespace winrt::WinManageUI::implementation
 #endif
     }
 
+    Microsoft::UI::Xaml::Window App::Window() noexcept
+    {
+        return m_window;
+    }
+
+    Containers::DependencyContainer& App::Dependencies() noexcept
+    {
+        return m_container;
+    }
+
+    void App::RegisterDependencies()
+    {
+        m_container.RegisterInstance<winrt::WinMgmt::WmiDataContext>();
+    }
+
     void App::OnLaunched([[maybe_unused]] LaunchActivatedEventArgs const& e)
     {
+        OPEN_CONSOLE
+
         m_window = winrt::Microsoft::UI::Xaml::Window{};
         m_rootPage = winrt::WinManageUI::RootPage{};
 
         m_window.Content(m_rootPage);
         
         auto appWindow{ m_window.AppWindow() };
-        //appWindow.SetIcon(L"AAA");
 
         m_window.ExtendsContentIntoTitleBar(true);
         m_window.Activated([&self = *this](winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::WindowActivatedEventArgs const&)
@@ -44,10 +66,8 @@ namespace winrt::WinManageUI::implementation
             Win32Helper::DisableMultiInstanceWindow(sender.try_as<Microsoft::UI::Xaml::Window>(), self.m_appName);
         });
 
-        OPEN_CONSOLE
-
         LOG_INFO("Test")
-
+  
         m_window.Activate();
     }
 }
