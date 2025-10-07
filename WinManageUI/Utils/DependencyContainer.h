@@ -139,8 +139,8 @@ namespace Containers {
                 return p->as<T>();
             }
 
-            if (std::holds_alternative<std::function<winrt::Windows::Foundation::IInspectable()>>(entry->factory))
-                return std::get<std::function<winrt::Windows::Foundation::IInspectable()>>(entry->factory)().as<T>();
+            if (std::holds_alternative<winrt_factory_t>(entry->factory))
+                return std::get<winrt_factory_t>(entry->factory)().as<T>();
 
             throw std::runtime_error("Stored entry does not contain WinRT instance");
         }
@@ -161,8 +161,8 @@ namespace Containers {
                 return std::static_pointer_cast<std::decay_t<T>>(*p);
             }
 
-            if (std::holds_alternative<std::function<std::shared_ptr<void>()>>(entry->factory))
-                return std::static_pointer_cast<std::decay_t<T>>(std::get<std::function<std::shared_ptr<void>()>>(entry->factory)());
+            if (std::holds_alternative<native_factory_t>(entry->factory))
+                return std::static_pointer_cast<std::decay_t<T>>(std::get<native_factory_t>(entry->factory)());
 
             throw std::runtime_error("Stored entry does not contain native instance");
         }
@@ -186,10 +186,11 @@ namespace Containers {
         }
 
     private:
+        using winrt_factory_t = std::function<winrt::Windows::Foundation::IInspectable()>;
+        using native_factory_t = std::function<std::shared_ptr<void>()>;
 
-
-        using InstanceVariant = std::variant<std::shared_ptr<void>, winrt::Windows::Foundation::IInspectable>;
-        using FactoryVariant = std::variant<std::function<std::shared_ptr<void>()>, std::function<winrt::Windows::Foundation::IInspectable()>>;
+        using instance_variant_t = std::variant<std::shared_ptr<void>, winrt::Windows::Foundation::IInspectable>;
+        using factory_variant_t = std::variant<native_factory_t, winrt_factory_t>;
 
         struct Key {
             std::type_index type;
@@ -207,8 +208,8 @@ namespace Containers {
 
         struct Entry {
             enum class Type { Native, WinRT } type = Type::Native;
-            InstanceVariant instance;
-            FactoryVariant factory;
+            instance_variant_t instance;
+            factory_variant_t factory;
         };
 
         std::shared_ptr<Entry> GetEntry(std::type_index t, std::string const& name) {

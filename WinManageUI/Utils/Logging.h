@@ -25,8 +25,6 @@
 
 #define LOG_CRITICAL(...) spdlog::critical(__VA_ARGS__);
 
-#define LOG_FLUSH()      spdlog::flush_all();
-
 #else
 
 #define OPEN_CONSOLE
@@ -36,6 +34,5 @@
 #define LOG_DEBUG(...)
 #define LOG_TRACE(...)
 #define LOG_CRITICAL(...)
-#define LOG_FLUSH()
 
 #endif

@@ -77,6 +77,12 @@ namespace winrt::WinManageUI::implementation
         });
 
         LOG_INFO("Test")
+        LOG_DEBUG("Test")
+        LOG_ERROR("Test")
+        LOG_CRITICAL("Test")
+        LOG_WARN("Test")
+        LOG_TRACE("Test")
+
   
         m_window.Activate();
     }
